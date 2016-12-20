@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,21 +10,24 @@ using GAM;
 namespace LabbServer
 {
     class MsgContinueRead
-    { }
+    {
+        public static MsgContinueRead Instance { get; } = new MsgContinueRead();
+    }
     internal class MsgReaderClosed
     {
+        public static MsgReaderClosed Instance { get; } = new MsgReaderClosed();
     }
 
-    class ReadActor : IActor
+    class StreamReaderActor : IActor 
     {
         private readonly StreamReader _reader;
 
-        public ReadActor(StreamReader reader)
+        public StreamReaderActor(StreamReader reader)
         {
             _reader = reader;
         }
 
-        public Task ReceiveAsync(IContext context)
+        public async Task ReceiveAsync(IContext context)
         {
             if (context.Message is Started)
             {
@@ -31,18 +35,18 @@ namespace LabbServer
             }
             else if (context.Message is MsgContinueRead)
             {
-                var line = _reader.ReadLine();
+                var line = await _reader.ReadLineAsync();
                 if (line == null)
                 {
-                    context.Parent.Tell(new MsgReaderClosed());
+                    context.Parent.Tell(MsgReaderClosed.Instance);
                 }
                 else
                 {
                     context.Parent.Tell(line);
-                    context.Self.Tell(new MsgContinueRead());
+                    context.Self.Tell(MsgContinueRead.Instance);
                 }
             }
-            return Actor.Done;
+            await Actor.Done;
         }
     }
 

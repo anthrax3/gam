@@ -47,11 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientActor.cs" />
+    <Compile Include="TcpClientActor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadActor.cs" />
-    <Compile Include="ServerActor.cs" />
+    <Compile Include="StreamReaderActor.cs" />
+    <Compile Include="TcpServerActor.cs" />
     <Compile Include="WriteActor.cs" />
   </ItemGroup>
   <ItemGroup>

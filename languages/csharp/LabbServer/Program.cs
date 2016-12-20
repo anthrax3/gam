@@ -12,7 +12,7 @@ namespace LabbServer
     {
         static void Main(string[] args)
         {
-            var a = Actor.Spawn(Actor.FromProducer(() => new ServerActor(new IPEndPoint(IPAddress.Any, 1337))));
+            var a = Actor.Spawn(Actor.FromProducer(() => new TcpServerActor(new IPEndPoint(IPAddress.Any, 1337))));
             Console.ReadLine();
         }
     }

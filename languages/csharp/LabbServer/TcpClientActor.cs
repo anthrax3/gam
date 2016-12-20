@@ -9,12 +9,12 @@ using GAM;
 
 namespace LabbServer
 {
-    public class ClientActor : IActor
+    public class TcpClientActor : IActor
     {
         private readonly TcpClient _client;
         private PID _writeActor;
 
-        public ClientActor(TcpClient client)
+        public TcpClientActor(TcpClient client)
         {
             _client = client;
         }
@@ -27,7 +27,7 @@ namespace LabbServer
                 var stream = _client.GetStream();
                 var reader = new StreamReader(stream);
                 var writer = new StreamWriter(stream) {AutoFlush = true};
-                context.Spawn(Actor.FromProducer(() => new ReadActor(reader)));
+                context.Spawn(Actor.FromProducer(() => new StreamReaderActor(reader)));
                 _writeActor = context.Spawn(Actor.FromProducer(() => new WriteActor(writer)));
             }
             else if (context.Message is string)
@@ -37,8 +37,7 @@ namespace LabbServer
             }
             else if (context.Message is MsgReaderClosed)
             {
-                Console.WriteLine("Client disconnected");
-                context.Sender.Stop();
+                context.Parent.Tell(new MsgClientDisconnected(context.Self, _client.Client.RemoteEndPoint));
             }
             return Actor.Done;
         }
